@@ -8,6 +8,7 @@ public class PickUp : MonoBehaviour
     [SerializeField] private LayerMask itemLayer;
     [SerializeField] private float hoverDistance;
     [SerializeField] private float speed;
+    [SerializeField] private float strength;
     
     private bool isHoldingItem;
     private RaycastHit hit;
@@ -36,13 +37,14 @@ public class PickUp : MonoBehaviour
     {
         if (isHoldingItem)
         {
-            var current = hit.rigidbody.transform.position;
+            //var current = hit.rigidbody.position;
             var target = playerCamera.transform.position + (playerCamera.transform.forward * hoverDistance);
             
-            Vector3 newPosition = Vector3.MoveTowards(current, target, speed * Time.fixedDeltaTime);
+            //Vector3 newPosition = Vector3.MoveTowards(current, target, speed * Time.fixedDeltaTime);
+            Vector3 desiredSpeed = (target - hit.rigidbody.position) * strength;
             
             hit.rigidbody.useGravity = false;
-            hit.rigidbody.MovePosition(newPosition);
+            hit.rigidbody.linearVelocity = Vector3.ClampMagnitude(desiredSpeed, speed);
         }
 
         if (!Mouse.current.rightButton.isPressed)
