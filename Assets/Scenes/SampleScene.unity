@@ -162,8 +162,8 @@ GameObject:
   - component: {fileID: 326089445}
   - component: {fileID: 326089444}
   - component: {fileID: 326089447}
-  - component: {fileID: 326089446}
   - component: {fileID: 326089448}
+  - component: {fileID: 326089446}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -262,13 +262,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 326089443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b2aa378aea55744c95c8ae0e6382b9e, type: 3}
+  m_Script: {fileID: 11500000, guid: c3398a9df8ae0d449858042f96232502, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::pickUp
+  m_EditorClassIdentifier: Assembly-CSharp::PickUp
   playerCamera: {fileID: 330585545}
   itemLayer:
     serializedVersion: 2
     m_Bits: 64
+  hoverDistance: 2
+  speed: 12
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
