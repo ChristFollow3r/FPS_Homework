@@ -10,10 +10,14 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private CapsuleCollider playerCollider;
     [SerializeField] private float speed = 7f;
     [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float jetpackForce = 3f;
     [SerializeField] private LayerMask groundLayer;
 
     private InputSystem_Actions _input;
     private float _rayLength;
+    private float _jetpackDuration = 1f;
+    private float _timer = 0f;
+    private bool _canFly;
     
     private void Awake()
     {
@@ -28,7 +32,9 @@ public class playerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (IsGrounded()) _timer = 0f;
         Jump(IsGrounded());
+        JetPack();
     }
 
     void FixedUpdate()
@@ -55,6 +61,7 @@ public class playerMovement : MonoBehaviour
         if (isGrounded && _input.Player.Jump.WasPressedThisFrame())
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
+            _canFly = true;
         }
     }
 
@@ -76,6 +83,17 @@ public class playerMovement : MonoBehaviour
     bool IsGrounded()
     {
         return Physics.Raycast(playerCollider.bounds.center, Vector3.down, _rayLength, groundLayer);
+    }
+
+    void JetPack()
+    {
+        if (_canFly && _input.Player.Jump.inProgress && _timer < 1f)
+        {
+            rb.AddForce(Vector3.up * jetpackForce, ForceMode.Force);
+            _timer += Time.deltaTime;
+        }
+
+        if (_timer > 1f) _canFly = false;
     }
 }
 
