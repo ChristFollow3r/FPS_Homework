@@ -44,7 +44,7 @@ public class PickUp : MonoBehaviour
             Vector3 desiredSpeed = (target - hit.rigidbody.position) * strength;
             
             hit.rigidbody.useGravity = false;
-            hit.rigidbody.linearVelocity = Vector3.ClampMagnitude(desiredSpeed, speed);
+            hit.rigidbody.linearVelocity = Vector3.ClampMagnitude(desiredSpeed, speed); // Also interpolate is set to interpolate on the item
         }
 
         if (!Mouse.current.rightButton.isPressed)

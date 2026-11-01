@@ -12,7 +12,7 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     private InputSystem_Actions input;
-
+    
     private void Awake()
     {
         input = new InputSystem_Actions();
@@ -26,10 +26,10 @@ public class playerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        PlayerMovement();
+        PlayerMovement(AdvancedMovement());
     }
 
-    void PlayerMovement()
+    void PlayerMovement(float actualSpeed)
     {
         Vector2 input = this.input.Player.Move.ReadValue<Vector2>();
         
@@ -37,7 +37,7 @@ public class playerMovement : MonoBehaviour
         moveDirection.y = 0f;
         moveDirection.Normalize();
         
-        Vector3 velocity = moveDirection * speed;
+        Vector3 velocity = moveDirection * actualSpeed;
         velocity.y = rb.linearVelocity.y;
 
         rb.linearVelocity = velocity;
@@ -52,6 +52,24 @@ public class playerMovement : MonoBehaviour
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
         }
+    }
+
+    float AdvancedMovement()
+    {
+        Vector2 playerInput = input.Player.Move.ReadValue<Vector2>();
+        
+        bool isWalkingStraight = playerInput.y > 0.1 && Math.Abs(playerInput.x) < 0.1;
+        bool isWalkingBackwards = playerInput.y < -0.1 && Math.Abs(playerInput.x) < 0.1;
+        bool isWalkingLeft = Math.Abs(playerInput.y) < 0.1 && playerInput.x > 0.1;
+        bool isWalkingRight = Math.Abs(playerInput.y) < 0.1 && playerInput.x < -0.1;
+        bool isRunning = isWalkingStraight && input.Player.Sprint.inProgress;
+
+        if (isRunning) return speed * 2;
+        if (isWalkingStraight) return speed;
+        if (isWalkingBackwards) return speed / 2;
+        if (isWalkingLeft || isWalkingRight) return speed - speed * 0.25f;
+
+        return 0;
     }
 }
 
