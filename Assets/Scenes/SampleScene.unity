@@ -384,6 +384,9 @@ MonoBehaviour:
   hoverDistance: 2
   speed: 12
   strength: 20
+  wheelSpeed: 0.5
+  wheelMinDistance: 2
+  wheelMaxDistance: 20
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
