@@ -12,6 +12,7 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     private InputSystem_Actions input;
+    private bool isGrounded;
     
     private void Awake()
     {
@@ -45,8 +46,8 @@ public class playerMovement : MonoBehaviour
     
     void Jump()
     {
-        RaycastHit hit;
-        bool isGrounded = Physics.Raycast(playerCollider.bounds.center, Vector3.down, out hit, 2f, groundLayer);
+        RaycastHit hit; 
+        isGrounded = Physics.Raycast(playerCollider.bounds.center, Vector3.down, out hit, 2f, groundLayer);
 
         if (isGrounded && input.Player.Jump.WasPressedThisFrame())
         {
@@ -57,19 +58,18 @@ public class playerMovement : MonoBehaviour
     float AdvancedMovement()
     {
         Vector2 playerInput = input.Player.Move.ReadValue<Vector2>();
-        
-        bool isWalkingStraight = playerInput.y > 0.1 && Math.Abs(playerInput.x) < 0.1;
-        bool isWalkingBackwards = playerInput.y < -0.1 && Math.Abs(playerInput.x) < 0.1;
-        bool isWalkingLeft = Math.Abs(playerInput.y) < 0.1 && playerInput.x > 0.1;
-        bool isWalkingRight = Math.Abs(playerInput.y) < 0.1 && playerInput.x < -0.1;
+
+        bool isWalkingStraight = playerInput.y > 0.1;
+        bool isWalkingBackwards = playerInput.y < -0.1;
         bool isRunning = isWalkingStraight && input.Player.Sprint.inProgress;
 
+        if (!isGrounded) return 0;
+        
         if (isRunning) return speed * 2;
         if (isWalkingStraight) return speed;
         if (isWalkingBackwards) return speed / 2;
-        if (isWalkingLeft || isWalkingRight) return speed - speed * 0.25f;
 
-        return 0;
+        return speed - speed * 0.25f;
     }
 }
 
