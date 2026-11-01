@@ -11,28 +11,33 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private float jumpForce = 7f;
     [SerializeField] private LayerMask groundLayer;
 
-    private InputSystem_Actions input;
-    private bool isGrounded;
+    private InputSystem_Actions _input;
+    private float _rayLength;
     
     private void Awake()
     {
-        input = new InputSystem_Actions();
-        input.Enable();
+        _input = new InputSystem_Actions();
+        _input.Enable();
+    }
+
+    private void Start()
+    {
+        _rayLength = playerCollider.height / 2;
     }
 
     private void Update()
     {
-        Jump();
+        Jump(IsGrounded());
     }
 
     void FixedUpdate()
     {
-        PlayerMovement(AdvancedMovement());
+        PlayerMovement(AdvancedMovement(IsGrounded()));
     }
 
     void PlayerMovement(float actualSpeed)
     {
-        Vector2 input = this.input.Player.Move.ReadValue<Vector2>();
+        Vector2 input = this._input.Player.Move.ReadValue<Vector2>();
         
         Vector3 moveDirection = playerCamera.transform.forward * input.y + playerCamera.transform.right * input.x;
         moveDirection.y = 0f;
@@ -44,32 +49,32 @@ public class playerMovement : MonoBehaviour
         rb.linearVelocity = velocity;
     }
     
-    void Jump()
+    void Jump(bool isGrounded)
     {
-        RaycastHit hit; 
-        isGrounded = Physics.Raycast(playerCollider.bounds.center, Vector3.down, out hit, 2f, groundLayer);
-
-        if (isGrounded && input.Player.Jump.WasPressedThisFrame())
+        if (isGrounded && _input.Player.Jump.WasPressedThisFrame())
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
         }
     }
 
-    float AdvancedMovement()
+    float AdvancedMovement(bool isGrounded)
     {
-        Vector2 playerInput = input.Player.Move.ReadValue<Vector2>();
+        Vector2 playerInput = _input.Player.Move.ReadValue<Vector2>();
+        bool isRunning = isGrounded && _input.Player.Sprint.inProgress;
+        float actualSpeed;
 
-        bool isWalkingStraight = playerInput.y > 0.1;
-        bool isWalkingBackwards = playerInput.y < -0.1;
-        bool isRunning = isWalkingStraight && input.Player.Sprint.inProgress;
+        if (playerInput.y > 0.1f) actualSpeed = isRunning ? speed * 2 : speed;
+        else if (playerInput.y < -0.1) actualSpeed = speed * 0.5f;
+        else actualSpeed = speed * 0.75f;
 
-        if (!isGrounded) return 0;
-        
-        if (isRunning) return speed * 2;
-        if (isWalkingStraight) return speed;
-        if (isWalkingBackwards) return speed / 2;
+        if (!isGrounded) actualSpeed *= 0.5f;
 
-        return speed - speed * 0.25f;
+        return actualSpeed;
+    }
+
+    bool IsGrounded()
+    {
+        return Physics.Raycast(playerCollider.bounds.center, Vector3.down, _rayLength, groundLayer);
     }
 }
 
