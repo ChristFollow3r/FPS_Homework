@@ -44,7 +44,7 @@ public class playerMovement : MonoBehaviour
 
     void PlayerMovement(float actualSpeed)
     {
-        Vector2 input = this._input.Player.Move.ReadValue<Vector2>();
+        Vector2 input = _input.Player.Move.ReadValue<Vector2>();
         
         Vector3 moveDirection = playerCamera.transform.forward * input.y + playerCamera.transform.right * input.x;
         moveDirection.y = 0f;
