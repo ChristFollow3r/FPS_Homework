@@ -34,11 +34,11 @@ public class playerMovement : MonoBehaviour
     {
         if (IsGrounded()) _timer = 0f;
         Jump(IsGrounded());
-        JetPack();
     }
 
     void FixedUpdate()
     {
+        JetPack();
         PlayerMovement(AdvancedMovement(IsGrounded()));
     }
 
@@ -61,7 +61,6 @@ public class playerMovement : MonoBehaviour
         if (isGrounded && _input.Player.Jump.WasPressedThisFrame())
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
-            _canFly = true;
         }
     }
 
@@ -87,13 +86,17 @@ public class playerMovement : MonoBehaviour
 
     void JetPack()
     {
-        if (_canFly && _input.Player.Jump.inProgress && _timer < 1f)
+        if (!_canFly && !IsGrounded() && !_input.Player.Jump.inProgress)
+        {
+            _canFly = true;
+        }
+        if (_canFly && _input.Player.Jump.inProgress && _timer < _jetpackDuration)
         {
             rb.AddForce(Vector3.up * jetpackForce, ForceMode.Force);
             _timer += Time.deltaTime;
         }
 
-        if (_timer > 1f) _canFly = false;
+        if (_timer >= _jetpackDuration) _canFly = false;
     }
 }
 
